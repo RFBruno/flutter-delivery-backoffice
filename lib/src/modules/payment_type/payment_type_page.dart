@@ -1,12 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:mobx/mobx.dart';
 
-class PaymentTypePage extends StatelessWidget {
+import '../../core/ui/helpers/loader.dart';
+import '../../core/ui/helpers/messages.dart';
+import 'widget/payment_type_controller.dart';
+import 'widget/payment_type_header.dart';
+import 'widget/payment_type_item.dart';
+
+class PaymentTypePage extends StatefulWidget {
   const PaymentTypePage({Key? key}) : super(key: key);
 
   @override
+  State<PaymentTypePage> createState() => _PaymentTypePageState();
+}
+
+class _PaymentTypePageState extends State<PaymentTypePage> with Loader, Messages {
+
+  final controller = Modular.get<PaymentTypeController>();
+  final disposers = <ReactionDisposer>[];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final statusDisposer = reaction((_) => controller.status, (status) {
+        switch (status) {
+          case PaymentTypeStateStatus.initial:
+            break;
+          case PaymentTypeStateStatus.loading:
+            showLoader();
+            break;
+          case PaymentTypeStateStatus.loaded:
+            hideLoader();
+            break;
+          case PaymentTypeStateStatus.error:
+          hideLoader();
+          showError(controller.errorMessage ?? 'Erro ao buscar formas de pagamentos');
+            break;
+        }
+      });
+      disposers.addAll([statusDisposer]);
+      controller.loadPayments();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('PAyment type'),
+    return Container(
+      color: Colors.grey[50],
+      padding: const EdgeInsets.only(left: 40, top: 40, right: 40),
+      child: Column(
+        children: [
+          PaymentTypeHeader(),
+          const SizedBox(
+            height: 50,
+          ),
+          Expanded(
+            child: GridView.builder(
+              itemCount: 10,
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                mainAxisExtent: 120,
+                mainAxisSpacing: 20,
+                crossAxisSpacing: 10,
+                maxCrossAxisExtent: 680,
+              ),
+              itemBuilder: (context, index) {
+                return const PaymentTypeItem();
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
