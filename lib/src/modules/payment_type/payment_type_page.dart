@@ -6,6 +6,7 @@ import 'package:mobx/mobx.dart';
 import '../../core/ui/helpers/loader.dart';
 import '../../core/ui/helpers/messages.dart';
 import 'widget/payment_type_controller.dart';
+import 'widget/payment_type_form/payment_type_form_modal.dart';
 import 'widget/payment_type_header.dart';
 import 'widget/payment_type_item.dart';
 
@@ -25,6 +26,11 @@ class _PaymentTypePageState extends State<PaymentTypePage>
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+
+      final filterDiposer = reaction((_) => controller.filterEnabled, (_) {
+        controller.loadPayments();
+      });
+
       final statusDisposer = reaction((_) => controller.status, (status) {
         switch (status) {
           case PaymentTypeStateStatus.initial:
@@ -42,14 +48,27 @@ class _PaymentTypePageState extends State<PaymentTypePage>
             );
             break;
           case PaymentTypeStateStatus.addOrUpdatePayment:
-              hideLoader();
-              showAddOrUpdatePayment();
+            hideLoader();
+            showAddOrUpdatePayment();
+            break;
+          case PaymentTypeStateStatus.saved:
+            hideLoader();
+            Navigator.of(context, rootNavigator: true).pop();
+            controller.loadPayments();
             break;
         }
       });
-      disposers.addAll([statusDisposer]);
+      disposers.addAll([statusDisposer,filterDiposer]);
       controller.loadPayments();
     });
+  }
+
+  @override
+  void dispose() {
+    for (final dispose in disposers) {
+      dispose();
+    }
+    super.dispose();
   }
 
   void showAddOrUpdatePayment() {
@@ -64,10 +83,7 @@ class _PaymentTypePageState extends State<PaymentTypePage>
             ),
             backgroundColor: Colors.white,
             elevation: 10,
-            child: Container(
-              width: 200,
-              height: 200,
-              child: Text('MODALX')),
+            child: PaymentTypeFormModal(model: controller.paymentTypeSelected, controller: controller),
           ),
         );
       },

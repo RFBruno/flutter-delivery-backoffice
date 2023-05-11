@@ -40,23 +40,29 @@ class PaymentTypeItem extends StatelessWidget {
             const SizedBox(
               width: 20,
             ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Forma de pagamento',
-                  style: context.textStyles.textRegular.copyWith(color: colorAll),
-                ),
-                const SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  payment.name,
-                  style: context.textStyles.textTitle.copyWith(color: colorAll),
-                ),
-              ],
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  FittedBox(
+                    child: Text(
+                      'Forma de pagamento',
+                      style: context.textStyles.textRegular.copyWith(color: colorAll),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  FittedBox(
+                    child: Text(
+                      payment.name,
+                      style: context.textStyles.textTitle.copyWith(color: colorAll),
+                    ),
+                  ),
+                ],
+              ),
             ),
             Expanded(
               child: Align(

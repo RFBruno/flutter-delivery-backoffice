@@ -5,7 +5,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../../../core/ui/widget/base_header.dart';
 import 'payment_type_controller.dart';
 
-class PaymentTypeHeader extends StatelessWidget {
+class PaymentTypeHeader extends StatefulWidget {
 
   final PaymentTypeController controller;
 
@@ -15,17 +15,28 @@ class PaymentTypeHeader extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<PaymentTypeHeader> createState() => _PaymentTypeHeaderState();
+}
+
+class _PaymentTypeHeaderState extends State<PaymentTypeHeader> {
+
+  bool? enabled;
+  
+  @override
   Widget build(BuildContext context) {
     return BaseHeader(
       title: 'ADMINISTRAR FORMAS DE PAGAMENTO',
       buttonLabel: 'ADICIONAR',
       buttonPressed: () {
-        controller.addPayment();
+        widget.controller.addPayment();
       },
       filterWidget: DropdownButton(
-        value: true,
+        value: enabled,
         onChanged: (value) {
-          
+          setState(() {
+            enabled = value;
+            widget.controller.changeFilter(value);
+          });
         },
         items: const [
           DropdownMenuItem(
