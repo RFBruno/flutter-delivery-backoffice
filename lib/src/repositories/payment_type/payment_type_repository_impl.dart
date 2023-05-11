@@ -52,7 +52,7 @@ class PaymentTypeRepositoryImpl implements PaymentTypeRepository {
     try {
       final client = _dio.auth();
       if (model.id != null) {
-        client.post(
+        client.put(
           '/payment-types/${model.id}',
           data: model.toMap(),
         );
@@ -63,9 +63,9 @@ class PaymentTypeRepositoryImpl implements PaymentTypeRepository {
             );
       }
     } on DioError catch (e, s) {
-      log('Erro ao buscar formas de pagamento ', error: e, stackTrace: s);
+      log('Erro ao salvar forma de pagamento ', error: e, stackTrace: s);
       throw RepositoryException(
-        message: 'Erro ao buscar formas de pagamento',
+        message: 'Erro ao salvar forma de pagamento',
       );
     }
   }

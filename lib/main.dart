@@ -4,6 +4,7 @@ import './src/app_module.dart';
 import './src/app_widget.dart';
 import 'src/core/env/env.dart';
 
+//TODO: dart run build_runner watch -d
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Env.instance.load();
