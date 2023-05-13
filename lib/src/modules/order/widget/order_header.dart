@@ -1,10 +1,17 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
 import '../../../core/ui/widget/base_header.dart';
 import '../../../models/orders/order_status.dart';
+import '../order_controller.dart';
 
 class OrderHeader extends StatefulWidget {
-  const OrderHeader({super.key});
+  final OrderController controller;
+  
+  const OrderHeader({
+    Key? key,
+    required this.controller,
+  }) : super(key: key);
 
   @override
   State<OrderHeader> createState() => _OrderHeaderState();
@@ -13,6 +20,7 @@ class OrderHeader extends StatefulWidget {
 class _OrderHeaderState extends State<OrderHeader> {
 
   OrderStatus? statusSelected;
+
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +31,9 @@ class _OrderHeaderState extends State<OrderHeader> {
         value: statusSelected,
         onChanged: (value) {
           setState(() {
+            widget.controller.changeStatusFilter(value);
             statusSelected = value;
+
           });
         },
         items: [
