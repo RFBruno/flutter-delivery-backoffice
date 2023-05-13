@@ -8,6 +8,7 @@ import 'package:mobx/mobx.dart';
 import 'package:validatorless/validatorless.dart';
 
 import '../../../core/env/env.dart';
+import '../../../core/extensions/formatter_extenssions.dart';
 import '../../../core/ui/helpers/loader.dart';
 import '../../../core/ui/helpers/messages.dart';
 import '../../../core/ui/helpers/size_extensions.dart';
@@ -46,6 +47,10 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             showLoader();
             break;
           case ProductDetailStateStatus.loaded:
+            final model = controller.productModel!;
+            nameEC.text = model.name;
+            priceEC.text = model.price.currencyPTBR;
+            descriptionEC.text = model.description;
             hideLoader();
             break;
           case ProductDetailStateStatus.error:
@@ -53,18 +58,21 @@ class _ProductDetailPageState extends State<ProductDetailPage>
             showError(controller.errorMessage!);
             break;
           case ProductDetailStateStatus.errorLoadProduct:
-            break;
-          case ProductDetailStateStatus.deleted:
+            hideLoader();
+            showError('Erro ao carregar o produto para alteração');
+            Navigator.pop(context);
             break;
           case ProductDetailStateStatus.uploaded:
             hideLoader();
             break;
+          case ProductDetailStateStatus.deleted:
           case ProductDetailStateStatus.saved:
             hideLoader();
             Navigator.pop(context);
             break;
         }
       });
+      controller.loadProduct(widget.productId);
     });
     super.initState();
   }
@@ -210,18 +218,60 @@ class _ProductDetailPageState extends State<ProductDetailPage>
                         padding: const EdgeInsets.all(5),
                         width: widthButtonAction / 2,
                         height: 60,
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.redAccent,
-                            side: const BorderSide(
-                              color: Colors.redAccent,
+                        child: Visibility(
+                          visible: widget.productId != null,
+                          child: OutlinedButton(
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.redAccent,
+                              side: const BorderSide(
+                                color: Colors.redAccent,
+                              ),
                             ),
-                          ),
-                          onPressed: () {},
-                          child: Text(
-                            'Deletar',
-                            style: context.textStyles.textBold.copyWith(
-                              color: Colors.redAccent,
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AlertDialog(
+                                    title: const Text('Confirmar'),
+                                    content: Text(
+                                      'Confirma a exclusão do produto ${controller.productModel!.name}',
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: Colors.redAccent,
+                                        ),
+                                        child: Text(
+                                          'Cancelar',
+                                          style: context.textStyles.textBold
+                                              .copyWith(
+                                            color: Colors.redAccent,
+                                          ),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                          controller.deleteProduct();
+                                        },
+                                        child: Text(
+                                          'Confirmar',
+                                          style: context.textStyles.textBold,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Text(
+                              'Deletar',
+                              style: context.textStyles.textBold.copyWith(
+                                color: Colors.redAccent,
+                              ),
                             ),
                           ),
                         ),

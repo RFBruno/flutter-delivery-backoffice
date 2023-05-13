@@ -1,10 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../../../core/env/env.dart';
 import '../../../../core/extensions/formatter_extenssions.dart';
 import '../../../../core/ui/styles/text_styles.dart';
 import '../../../../models/product_model.dart';
+import '../products_controller.dart';
 
 class ProductItem extends StatelessWidget {
 
@@ -30,12 +32,12 @@ class ProductItem extends StatelessWidget {
                 decoration: BoxDecoration(
                   borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
-                      topRight: Radius.circular(20)),
+                      topRight: Radius.circular(20),),
                   image: DecorationImage(
                       image: NetworkImage(
                         '${Env.instance.get('backend_base_url')}${product.image}',
                       ),
-                      fit: BoxFit.cover),
+                      fit: BoxFit.cover,),
                 ),
               ),
               Padding(
@@ -58,8 +60,8 @@ class ProductItem extends StatelessWidget {
                     child: Text(product.price.currencyPTBR),
                   ),
                   TextButton(onPressed: () {
-                    
-                  }, child: Text('Editar'))
+                    context.read<ProductsController>().editProduct(product);
+                  }, child: const Text('Editar'),)
                 ],
               )
             ],
